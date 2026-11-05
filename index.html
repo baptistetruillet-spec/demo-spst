@@ -1,0 +1,361 @@
+TEST-PASTE<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Saisie fiche d'entreprise</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : barre d'application, bandeau dossier, onglets horizontaux, formulaire en grille, barre d'actions en pied */
+:root{
+  --bg:#eef1f3; --panel:#ffffff; --fg:#1d2a33; --muted:#5b6b76; --line:#d3dbe0;
+  --accent:#1f5f7a; --accent-soft:#e2eef3; --ok:#2e7d4f; --ok-soft:#e3f2e8; --warn:#9a6b00; --warn-soft:#fbf1d9;
+  --bar:#1d3a4a; --bar-fg:#e8f0f4;
+  --f-body:"Source Sans 3", "Segoe UI", Arial, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#12191e; --panel:#1a242b; --fg:#dfe7ec; --muted:#93a3ad; --line:#2d3b44;
+  --accent:#6fb3cf; --accent-soft:#1e3540; --ok:#6cc792; --ok-soft:#1c3326; --warn:#e0b44e; --warn-soft:#3a2f14;
+  --bar:#0d1418; --bar-fg:#dfe7ec; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#12191e; --panel:#1a242b; --fg:#dfe7ec; --muted:#93a3ad; --line:#2d3b44;
+  --accent:#6fb3cf; --accent-soft:#1e3540; --ok:#6cc792; --ok-soft:#1c3326; --warn:#e0b44e; --warn-soft:#3a2f14;
+  --bar:#0d1418; --bar-fg:#dfe7ec; color-scheme:dark }
+*{box-sizing:border-box}
+html{font-size:17px}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:1rem;line-height:1.5;min-height:100vh}
+.wrap{max-width:1360px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 32px}
+.appbar{background:var(--bar);color:var(--bar-fg)}
+.appbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;flex-wrap:wrap}
+.appname{font-weight:700;letter-spacing:.02em;font-size:1.25rem}
+.appname small{font-weight:400;opacity:.75;margin-left:8px}
+.demo-tag{font-family:var(--f-mono);font-size:12px;border:1px solid currentColor;border-radius:3px;padding:2px 6px;opacity:.85}
+.dossier{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;background:var(--panel);border:1px solid var(--line);border-top:0;padding:12px 16px;margin-bottom:16px}
+.dossier{padding:18px 24px !important;margin-top:20px}
+.dossier h1{font-size:1.6rem;margin:0}
+.dossier .meta{color:var(--muted);font-size:.95rem}
+.dossier .meta code{font-family:var(--f-mono)}
+.status{margin-left:auto;font-size:13px;font-weight:600;padding:3px 10px;border-radius:3px;background:var(--warn-soft);color:var(--warn)}
+.status.saved{background:var(--ok-soft);color:var(--ok)}
+.tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:2px solid var(--line)}
+.tabs button{font:inherit;font-size:1.05rem;font-weight:600;background:transparent;color:var(--muted);border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:14px 20px;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{background:var(--panel);border:1px solid var(--line);border-top:0;padding:28px 28px 32px;min-height:420px}
+.panel h2{font-size:1.3rem;margin:0 0 4px}
+.panel .hint{color:var(--muted);font-size:.95rem;margin:0 0 22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px 28px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field.wide{grid-column:1/-1}
+label{font-size:.9rem;font-weight:600;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;width:100%;min-height:44px}
+textarea{min-height:84px;resize:vertical}
+fieldset{border:1px solid var(--line);border-radius:3px;padding:12px 14px;margin:0 0 16px}
+legend{font-weight:700;padding:0 6px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:620px}
+th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:middle}
+th{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--accent-soft)}
+td input,td select{padding:5px 7px}
+.btn{font:inherit;font-weight:600;border-radius:4px;padding:11px 20px;cursor:pointer;border:1px solid var(--accent);background:var(--panel);color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--panel)}
+.btn.small{padding:4px 10px;font-size:13px}
+.btn.ghost{border-color:var(--line);color:var(--muted)}
+.row-actions{margin-top:10px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:16px}
+.actions .right{display:flex;gap:10px;flex-wrap:wrap}
+.confirm{border:1px solid var(--warn);background:var(--warn-soft);padding:14px 16px;margin-top:16px;border-radius:3px}
+.confirm p{margin:0 0 10px}
+.saved-box{border:1px solid var(--ok);background:var(--ok-soft);padding:14px 16px;margin-top:16px;border-radius:3px}
+.saved-box h3{margin:0 0 6px;font-size:15px;color:var(--ok)}
+.saved-box ul{margin:6px 0 0;padding-left:18px}
+.risk-grid td:first-child{font-weight:600;white-space:nowrap}
+.num{font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:no-preference){.tabs button{transition:color .15s,border-color .15s}}
+</style>
+
+<style>.pills{display:flex;flex-wrap:wrap;gap:6px}.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:4px;padding:8px 14px;cursor:pointer;font-size:.95rem;font-weight:600;color:var(--fg);background:var(--panel)}.pill input{width:auto;margin:0}.pill:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}.pill:focus-within{outline:2px solid var(--accent);outline-offset:1px}td .pills{min-width:260px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
+<style>[hidden]{display:none!important}body{margin:0}</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="wrap">
+    <div class="appname">Logiciel métier SPST <small>Module Actions en milieu de travail</small></div>
+    <span class="demo-tag">ENVIRONNEMENT DE DÉMONSTRATION · DONNÉES FICTIVES</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="dossier" aria-label="Dossier adhérent">
+    <h1 id="dossier-titre">Nouvelle fiche d'entreprise</h1>
+    <span class="meta">Dossier adhérent <code id="dossier-num">D-2026-0427</code> · Secteur <span id="secteur-label">non renseigné</span></span>
+    <span class="status" id="statut-fiche" role="status">Brouillon non enregistré</span>
+  </section>
+
+  <form id="fe-form" novalidate>
+    <div class="tabs" role="tablist" aria-label="Rubriques de la fiche">
+      <button type="button" role="tab" id="tab-entreprise" aria-controls="p-entreprise" aria-selected="true">1. Entreprise</button>
+      <button type="button" role="tab" id="tab-effectifs" aria-controls="p-effectifs" aria-selected="false">2. Effectifs et organisation</button>
+      <button type="button" role="tab" id="tab-postes" aria-controls="p-postes" aria-selected="false">3. Postes de travail</button>
+      <button type="button" role="tab" id="tab-risques" aria-controls="p-risques" aria-selected="false">4. Risques</button>
+      <button type="button" role="tab" id="tab-actions" aria-controls="p-actions" aria-selected="false">5. Préconisations</button>
+      <button type="button" role="tab" id="tab-validation" aria-controls="p-validation" aria-selected="false">6. Validation</button>
+    </div>
+
+    <!-- 1. Entreprise -->
+    <section class="panel" role="tabpanel" id="p-entreprise" aria-labelledby="tab-entreprise">
+      <h2>Renseignements généraux</h2>
+      <p class="hint">Identité de l'établissement et interlocuteurs.</p>
+      <div class="grid">
+        <div class="field"><label for="raison_sociale">Raison sociale</label><input id="raison_sociale" name="raison_sociale"></div>
+        <div class="field"><label for="siret">SIRET</label><input id="siret" name="siret" inputmode="numeric"></div>
+        <div class="field"><label for="code_naf">Code NAF</label><input id="code_naf" name="code_naf" placeholder="ex. 16.23Z"></div>
+        <div class="field"><label for="activite">Activité principale</label><input id="activite" name="activite"></div>
+        <div class="field wide"><label for="adresse">Adresse</label><input id="adresse" name="adresse"></div>
+        <div class="field"><label for="code_postal">Code postal</label><input id="code_postal" name="code_postal" inputmode="numeric"></div>
+        <div class="field"><label for="ville">Ville</label><input id="ville" name="ville"></div>
+        <div class="field"><label for="convention">Convention collective</label><input id="convention" name="convention"></div>
+        <div class="field"><label for="dirigeant">Dirigeant</label><input id="dirigeant" name="dirigeant"></div>
+        <div class="field"><label for="interlocuteur">Interlocuteur prévention</label><input id="interlocuteur" name="interlocuteur"></div>
+        <div class="field"><label for="telephone">Téléphone</label><input id="telephone" name="telephone" type="tel"></div>
+      </div>
+    </section>
+
+    <!-- 2. Effectifs -->
+    <section class="panel" role="tabpanel" id="p-effectifs" aria-labelledby="tab-effectifs" hidden>
+      <h2>Effectifs et organisation de la prévention</h2>
+      <p class="hint">Données déclarées par l'employeur lors de la visite.</p>
+      <div class="grid">
+        <div class="field"><label for="effectif_total">Effectif total</label><input id="effectif_total" name="effectif_total" type="number" min="0" class="num"></div>
+        <div class="field"><label for="effectif_hommes">Hommes</label><input id="effectif_hommes" name="effectif_hommes" type="number" min="0" class="num"></div>
+        <div class="field"><label for="effectif_femmes">Femmes</label><input id="effectif_femmes" name="effectif_femmes" type="number" min="0" class="num"></div>
+        <div class="field"><label for="apprentis">Apprentis</label><input id="apprentis" name="apprentis" type="number" min="0" class="num"></div>
+        <div class="field"><label for="interimaires">Intérimaires</label><input id="interimaires" name="interimaires" type="number" min="0" class="num"></div>
+        <div class="field"><label for="horaires">Horaires collectifs</label><input id="horaires" name="horaires" placeholder="ex. 7 h 30 - 16 h 00"></div>
+        <div class="field"><label for="travail_nuit">Travail de nuit</label>
+          <select id="travail_nuit" name="travail_nuit"><option value="">À renseigner</option><option>Non</option><option>Oui</option></select></div>
+        <div class="field"><label for="cse">CSE</label>
+          <select id="cse" name="cse"><option value="">À renseigner</option><option>Oui</option><option>Non</option><option>Non concerné (moins de 11 salariés)</option></select></div>
+        <div class="field"><label for="duerp">DUERP</label>
+          <select id="duerp" name="duerp"><option value="">À renseigner</option><option>À jour</option><option>Non mis à jour depuis plus d'un an</option><option>Absent</option></select></div>
+        <div class="field"><label for="duerp_date">Date de dernière mise à jour du DUERP</label><input id="duerp_date" name="duerp_date" placeholder="JJ/MM/AAAA"></div>
+        <div class="field"><label for="nb_sst">Sauveteurs secouristes du travail</label><input id="nb_sst" name="nb_sst" type="number" min="0" class="num"></div>
+        <div class="field"><label for="referent_securite">Salarié désigné compétent (L4644-1)</label>
+          <select id="referent_securite" name="referent_securite"><option value="">À renseigner</option><option>Oui</option><option>Non</option></select></div>
+      </div>
+    </section>
+
+    <!-- 3. Postes -->
+    <section class="panel" role="tabpanel" id="p-postes" aria-labelledby="tab-postes" hidden>
+      <h2>Postes de travail</h2>
+      <p class="hint">Une ligne par poste. Le type de suivi est celui recommandé par l'équipe pluridisciplinaire.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Poste</th><th scope="col">Effectif</th><th scope="col">Type de suivi</th><th scope="col">Expositions principales</th><th scope="col"><span class="sr">Supprimer</span></th></tr></thead>
+          <tbody id="postes-body"></tbody>
+        </table>
+      </div>
+      <div class="row-actions"><button type="button" class="btn small" id="add-poste">Ajouter un poste</button></div>
+    </section>
+
+    <!-- 4. Risques -->
+    <section class="panel" role="tabpanel" id="p-risques" aria-labelledby="tab-risques" hidden>
+      <h2>Risques professionnels</h2>
+      <p class="hint">Niveau de priorité et constat pour chaque famille de risques.</p>
+      <div class="table-wrap">
+        <table class="risk-grid">
+          <thead><tr><th scope="col">Famille de risques</th><th scope="col">Priorité</th><th scope="col">Constat</th></tr></thead>
+          <tbody id="risques-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Préconisations -->
+    <section class="panel" role="tabpanel" id="p-actions" aria-labelledby="tab-actions" hidden>
+      <h2>Préconisations et suites</h2>
+      <p class="hint">Actions conseillées à l'employeur, classées par priorité.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Action conseillée</th><th scope="col">Priorité</th><th scope="col">Échéance proposée</th><th scope="col"><span class="sr">Supprimer</span></th></tr></thead>
+          <tbody id="actions-body"></tbody>
+        </table>
+      </div>
+      <div class="row-actions"><button type="button" class="btn small" id="add-action">Ajouter une action</button></div>
+      <div class="grid" style="margin-top:16px">
+        <div class="field wide"><label for="documents">Documents à récupérer à la prochaine visite</label><textarea id="documents" name="documents"></textarea></div>
+        <div class="field wide"><label for="observations">Observations générales</label><textarea id="observations" name="observations"></textarea></div>
+      </div>
+    </section>
+
+    <!-- 6. Validation -->
+    <section class="panel" role="tabpanel" id="p-validation" aria-labelledby="tab-validation" hidden>
+      <h2>Validation de la fiche</h2>
+      <p class="hint">La fiche est transmise à l'employeur et tenue à disposition de l'inspection du travail après validation.</p>
+      <div class="grid">
+        <div class="field"><label for="preventeur">Préventeur rédacteur</label><input id="preventeur" name="preventeur"></div>
+        <div class="field"><label for="medecin">Médecin du travail</label><input id="medecin" name="medecin"></div>
+        <div class="field"><label for="date_visite">Date de visite</label><input id="date_visite" name="date_visite" placeholder="JJ/MM/AAAA"></div>
+        <div class="field"><label for="date_redaction">Date de rédaction</label><input id="date_redaction" name="date_redaction" placeholder="JJ/MM/AAAA"></div>
+        <div class="field"><label for="statut">Statut</label>
+          <select id="statut" name="statut"><option>En cours de rédaction</option><option>À valider par le médecin</option><option>Validée</option></select></div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="button" class="btn ghost" id="reset-btn">Vider la fiche</button>
+      <div class="right">
+        <button type="button" class="btn" id="next-btn">Rubrique suivante</button>
+        <button type="submit" class="btn primary" id="save-btn">Enregistrer la fiche</button>
+      </div>
+    </div>
+
+    <div class="confirm" id="confirm-box" hidden role="alertdialog" aria-labelledby="confirm-txt">
+      <p id="confirm-txt"></p>
+      <div class="right" style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="button" class="btn primary" id="confirm-yes">Confirmer l'enregistrement</button>
+        <button type="button" class="btn ghost" id="confirm-no">Annuler</button>
+      </div>
+    </div>
+
+    <div class="saved-box" id="saved-box" hidden>
+      <h3 id="saved-title">Fiche enregistrée</h3>
+      <div id="saved-detail"></div>
+    </div>
+  </form>
+</main>
+
+
+<script>
+(function(){
+  const RISQUES=["Risque chimique","Poussières et fumées","Bruit","Vibrations","Machines et outils","Chute de hauteur","Chute de plain-pied","Risque électrique","Manutention manuelle","Postures et gestes répétitifs","Incendie et explosion","Risques psychosociaux","Risque routier"];
+  const prio=(id,name)=>`<select id="${id}" name="${name}"><option value="">Non évalué</option><option>Rouge (prioritaire)</option><option>Orange</option><option>Jaune</option><option>Non concerné</option></select>`;
+  const rb=document.getElementById('risques-body');
+  RISQUES.forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><label for="risque_${i}_prio" style="color:inherit;font-size:inherit">${r}</label></td><td>${prio('risque_'+i+'_prio','risque_'+i+'_prio')}</td><td><input id="risque_${i}_constat" name="risque_${i}_constat" aria-label="Constat ${r}"></td>`;
+    rb.appendChild(tr); pillify(tr);
+  });
+  function pillify(root){
+    root.querySelectorAll('select').forEach(sel=>{
+      const lab=sel.getAttribute('aria-label')||((document.querySelector(`label[for="${sel.id}"]`)||{}).textContent)||sel.id;
+      const wrap=document.createElement('div'); wrap.className='pills'; wrap.setAttribute('role','radiogroup'); wrap.setAttribute('aria-label',lab);
+      const hid=document.createElement('input'); hid.type='hidden'; hid.id=sel.id; hid.name=sel.name; hid.value=sel.value; hid.defaultValue='';
+      [...sel.options].filter(o=>o.value!=='').forEach(o=>{
+        const l=document.createElement('label'); l.className='pill';
+        const r=document.createElement('input'); r.type='radio'; r.name=sel.id+'__choix'; r.value=o.value;
+        r.onchange=()=>{hid.value=r.value; hid.dispatchEvent(new Event('change',{bubbles:true}));};
+        l.append(r,document.createTextNode(o.textContent)); wrap.appendChild(l);
+      });
+      wrap.appendChild(hid); sel.replaceWith(wrap);
+    });
+  }
+  function syncPills(){document.querySelectorAll('.pills input[type=hidden]').forEach(h=>{document.getElementsByName(h.id+'__choix').forEach(r=>{r.checked=(r.value===h.value);});});}
+
+  let pN=0,aN=0;
+  function addPoste(){
+    pN++; const n=pN; const tr=document.createElement('tr');
+    tr.innerHTML=`<td><input id="poste_${n}_intitule" name="poste_${n}_intitule" aria-label="Intitulé du poste ${n}"></td>
+      <td><input id="poste_${n}_effectif" name="poste_${n}_effectif" type="number" min="0" class="num" aria-label="Effectif du poste ${n}" style="width:90px"></td>
+      <td><select id="poste_${n}_suivi" name="poste_${n}_suivi" aria-label="Type de suivi du poste ${n}"><option value="">À renseigner</option><option>SIS</option><option>SIA</option><option>SIR</option></select></td>
+      <td><input id="poste_${n}_expositions" name="poste_${n}_expositions" aria-label="Expositions du poste ${n}"></td>
+      <td><button type="button" class="btn small ghost" aria-label="Supprimer le poste ${n}">Supprimer</button></td>`;
+    tr.querySelector('button').onclick=()=>tr.remove();
+    document.getElementById('postes-body').appendChild(tr); pillify(tr);
+  }
+  function addAction(){
+    aN++; const n=aN; const tr=document.createElement('tr');
+    tr.innerHTML=`<td><input id="action_${n}_libelle" name="action_${n}_libelle" aria-label="Action conseillée ${n}"></td>
+      <td>${prio('action_'+n+'_priorite','action_'+n+'_priorite').replace('<select','<select aria-label="Priorité de l\'action '+n+'"')}</td>
+      <td><input id="action_${n}_echeance" name="action_${n}_echeance" placeholder="JJ/MM/AAAA" aria-label="Échéance de l'action ${n}" style="width:130px"></td>
+      <td><button type="button" class="btn small ghost" aria-label="Supprimer l'action ${n}">Supprimer</button></td>`;
+    tr.querySelector('button').onclick=()=>tr.remove();
+    document.getElementById('actions-body').appendChild(tr); pillify(tr);
+  }
+  const KEY='fe-demo-brouillon';
+  let saved=null; try{saved=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
+  const nP=saved?Math.max(3,saved.pN||3):3, nA=saved?Math.max(3,saved.aN||3):3;
+  for(let i=0;i<nP;i++)addPoste();
+  for(let i=0;i<nA;i++)addAction();
+  document.getElementById('add-poste').onclick=()=>{addPoste();persist();};
+  document.getElementById('add-action').onclick=()=>{addAction();persist();};
+  function persist(){
+    const vals={};document.querySelectorAll('#fe-form input,#fe-form select,#fe-form textarea').forEach(el=>{if(el.id)vals[el.id]=el.value;});
+    const st=document.getElementById('statut-fiche');
+    try{localStorage.setItem(KEY,JSON.stringify({vals,pN:document.querySelectorAll('#postes-body tr').length,aN:document.querySelectorAll('#actions-body tr').length,statut:st.textContent,saved:st.classList.contains('saved')}));}catch(e){}
+  }
+  window.__persist=persist;
+  pillify(document.getElementById('fe-form'));
+  if(saved&&saved.vals){Object.entries(saved.vals).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});}
+  syncPills();
+
+  const tabs=[...document.querySelectorAll('[role=tab]')];
+  function show(i){
+    tabs.forEach((t,j)=>{t.setAttribute('aria-selected',j===i);document.getElementById(t.getAttribute('aria-controls')).hidden=j!==i;});
+    document.getElementById('next-btn').hidden=i===tabs.length-1;
+  }
+  tabs.forEach((t,i)=>t.onclick=()=>show(i));
+  document.getElementById('next-btn').onclick=()=>{const i=tabs.findIndex(t=>t.getAttribute('aria-selected')==='true');show(Math.min(i+1,tabs.length-1));window.scrollTo({top:0});};
+
+  const form=document.getElementById('fe-form');
+  const statut=document.getElementById('statut-fiche');
+  if(saved&&saved.vals){
+    if(saved.vals.raison_sociale)document.getElementById('dossier-titre').textContent=saved.vals.raison_sociale;
+    if(saved.vals.activite)document.getElementById('secteur-label').textContent=saved.vals.activite;
+    statut.textContent=saved.statut||'Brouillon repris';if(saved.saved)statut.classList.add('saved');
+    if(!saved.saved&&!saved.statut)statut.textContent='Brouillon repris';
+  }
+  form.addEventListener('change',()=>persist());
+  form.addEventListener('input',e=>{
+    setTimeout(persist,0);
+    if(e.target.id==='raison_sociale') document.getElementById('dossier-titre').textContent=e.target.value||"Nouvelle fiche d'entreprise";
+    if(e.target.id==='activite') document.getElementById('secteur-label').textContent=e.target.value||'non renseigné';
+    if(statut.classList.contains('saved')){statut.classList.remove('saved');statut.textContent='Modifications non enregistrées';}
+  });
+
+  function count(){
+    const els=[...form.querySelectorAll('input,select,textarea')].filter(el=>el.id&&el.id!=='statut'&&el.type!=='radio');
+    const filled=els.filter(el=>el.value.trim()!=='');
+    const labelOf=el=>{const l=form.querySelector(`label[for="${el.id}"]`);return el.getAttribute('aria-label')||(l?l.textContent:el.id);};
+    const keyEmpty=['raison_sociale','siret','code_naf','adresse','effectif_total','duerp','preventeur','date_visite'].map(id=>document.getElementById(id)).filter(el=>!el.value.trim()).map(labelOf);
+    return {total:els.length,filled:filled.length,keyEmpty};
+  }
+  const box=document.getElementById('confirm-box');
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    const c=count();
+    document.getElementById('confirm-txt').textContent=`Enregistrer la fiche dans le dossier adhérent ? ${c.filled} champs renseignés sur ${c.total}.`+(c.keyEmpty.length?` Champs clés vides : ${c.keyEmpty.join(', ')}.`:'');
+    box.hidden=false; document.getElementById('confirm-yes').focus();
+  });
+  document.getElementById('confirm-no').onclick=()=>{box.hidden=true;};
+  document.getElementById('confirm-yes').onclick=()=>{
+    box.hidden=true;
+    const c=count(); const d=new Date();
+    const stamp=d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    statut.classList.add('saved'); statut.textContent='Enregistrée le '+stamp;
+    const sb=document.getElementById('saved-box'); sb.hidden=false;
+    document.getElementById('saved-title').textContent='Fiche enregistrée le '+stamp;
+    const postes=[...document.querySelectorAll('#postes-body tr')].filter(tr=>tr.querySelector('input').value.trim()).length;
+    const risques=[...document.querySelectorAll('#risques-body input[type=hidden]')].filter(s=>s.value&&s.value!=='Non concerné').length;
+    const actions=[...document.querySelectorAll('#actions-body tr')].filter(tr=>tr.querySelector('input').value.trim()).length;
+    document.getElementById('saved-detail').innerHTML=`<ul><li>${c.filled} champs renseignés sur ${c.total}</li><li>${postes} poste(s) de travail</li><li>${risques} famille(s) de risques évaluée(s)</li><li>${actions} préconisation(s)</li></ul>`+(c.keyEmpty.length?`<p style="margin:8px 0 0">À compléter : ${c.keyEmpty.join(', ')}.</p>`:'');
+    sb.scrollIntoView({behavior:'smooth',block:'nearest'});
+    persist();
+  };
+  document.getElementById('reset-btn').onclick=()=>{
+    form.reset(); document.querySelectorAll('.pills input[type=hidden]').forEach(h=>h.value=''); syncPills();
+    document.getElementById('dossier-titre').textContent="Nouvelle fiche d'entreprise";
+    document.getElementById('secteur-label').textContent='non renseigné';
+    statut.classList.remove('saved'); statut.textContent='Brouillon non enregistré';
+    document.getElementById('saved-box').hidden=true; box.hidden=true; show(0);
+    try{localStorage.removeItem(KEY);}catch(e){}
+  };
+})();
+</script>
+
+</body>
+</html>
