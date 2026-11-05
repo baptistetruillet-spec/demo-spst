@@ -76,6 +76,19 @@ td input,td select{padding:5px 7px}
 .risk-grid td:first-child{font-weight:600;white-space:nowrap}
 .num{font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:no-preference){.tabs button{transition:color .15s,border-color .15s}}
+.login{min-height:100vh;display:grid;place-items:center;background:var(--bar);padding-block:32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.login-card{background:var(--panel);width:100%;max-width:440px;border-radius:6px;padding:36px 32px;display:flex;flex-direction:column;gap:14px}
+.login-brand{font-weight:700;font-size:1.35rem;color:var(--accent)}
+.login-tag{align-self:flex-start;color:var(--muted)}
+.login h1{font-size:1.3rem;margin:6px 0 4px}
+#login-form{display:flex;flex-direction:column;gap:14px}
+.login-btn{margin-top:6px;width:100%}
+.login-error{margin:0;color:#b3261e;font-weight:600}
+.login-hint{display:flex;flex-direction:column;gap:2px;border:1px dashed var(--line);border-radius:4px;padding:12px 14px;font-size:.9rem;color:var(--muted)}
+.login-hint code{font-family:var(--f-mono);color:var(--fg)}
+.appbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.user-chip{font-size:.9rem;opacity:.9}
+.btn.logout{background:transparent;color:var(--bar-fg);border-color:var(--bar-fg)}
 </style>
 
 <style>.pills{display:flex;flex-wrap:wrap;gap:6px}.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:4px;padding:8px 14px;cursor:pointer;font-size:.95rem;font-weight:600;color:var(--fg);background:var(--panel)}.pill input{width:auto;margin:0}.pill:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}.pill:focus-within{outline:2px solid var(--accent);outline-offset:1px}td .pills{min-width:260px}
@@ -83,14 +96,37 @@ td input,td select{padding:5px 7px}
 <style>[hidden]{display:none!important}body{margin:0}</style>
 </head>
 <body>
-<header class="appbar">
+<section id="login-screen" class="login" aria-labelledby="login-title">
+  <div class="login-card">
+    <div class="login-brand">Logiciel métier SPST</div>
+    <span class="demo-tag login-tag">ENVIRONNEMENT DE DÉMONSTRATION · DONNÉES FICTIVES</span>
+    <h1 id="login-title">Connexion à votre espace</h1>
+    <form id="login-form" novalidate>
+      <div class="field"><label for="login-user">Identifiant</label><input id="login-user" name="login-user" autocomplete="username"></div>
+      <div class="field"><label for="login-pass">Mot de passe</label><input id="login-pass" name="login-pass" type="password" autocomplete="current-password"></div>
+      <p class="login-error" id="login-error" hidden>Identifiant ou mot de passe incorrect.</p>
+      <button type="submit" class="btn primary login-btn" id="login-btn">Se connecter</button>
+    </form>
+    <div class="login-hint">
+      <strong>Compte de démonstration</strong>
+      <span>Identifiant : <code>preventeur.demo</code></span>
+      <span>Mot de passe : <code>Demo2026</code></span>
+    </div>
+  </div>
+</section>
+
+<header class="appbar" id="app-header" hidden>
   <div class="wrap">
     <div class="appname">Logiciel métier SPST <small>Module Actions en milieu de travail</small></div>
-    <span class="demo-tag">ENVIRONNEMENT DE DÉMONSTRATION · DONNÉES FICTIVES</span>
+    <div class="appbar-right">
+      <span class="demo-tag">ENVIRONNEMENT DE DÉMONSTRATION · DONNÉES FICTIVES</span>
+      <span class="user-chip" id="user-chip">preventeur.demo</span>
+      <button type="button" class="btn small logout" id="logout-btn">Se déconnecter</button>
+    </div>
   </div>
 </header>
 
-<main class="wrap">
+<main class="wrap" id="app-main" hidden>
   <section class="dossier" aria-label="Dossier adhérent">
     <h1 id="dossier-titre">Nouvelle fiche d'entreprise</h1>
     <span class="meta">Dossier adhérent <code id="dossier-num">D-2026-0427</code> · Secteur <span id="secteur-label">non renseigné</span></span>
@@ -231,6 +267,22 @@ td input,td select{padding:5px 7px}
 
 
 <script>
+(function(){
+  const SKEY='fe-demo-session';
+  const loginEl=document.getElementById('login-screen'),hdr=document.getElementById('app-header'),mainEl=document.getElementById('app-main');
+  function openApp(user){loginEl.hidden=true;hdr.hidden=false;mainEl.hidden=false;document.getElementById('user-chip').textContent=user;document.title="Saisie fiche d'entreprise";}
+  function closeApp(){loginEl.hidden=false;hdr.hidden=true;mainEl.hidden=true;document.title="Connexion · Logiciel métier SPST";}
+  let sess=null; try{sess=localStorage.getItem(SKEY);}catch(e){}
+  if(sess) openApp(sess); else closeApp();
+  document.getElementById('login-form').addEventListener('submit',e=>{
+    e.preventDefault();
+    const u=document.getElementById('login-user').value.trim(), p=document.getElementById('login-pass').value;
+    const err=document.getElementById('login-error');
+    if(u==='preventeur.demo'&&p==='Demo2026'){err.hidden=true;try{localStorage.setItem(SKEY,u);}catch(e){} document.getElementById('login-pass').value=''; openApp(u); window.scrollTo({top:0});}
+    else{err.hidden=false;}
+  });
+  document.getElementById('logout-btn').onclick=()=>{try{localStorage.removeItem(SKEY);}catch(e){} closeApp();};
+})();
 (function(){
   const RISQUES=["Risque chimique","Poussières et fumées","Bruit","Vibrations","Machines et outils","Chute de hauteur","Chute de plain-pied","Risque électrique","Manutention manuelle","Postures et gestes répétitifs","Incendie et explosion","Risques psychosociaux","Risque routier"];
   const prio=(id,name)=>`<select id="${id}" name="${name}"><option value="">Non évalué</option><option>Rouge (prioritaire)</option><option>Orange</option><option>Jaune</option><option>Non concerné</option></select>`;
