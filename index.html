@@ -184,6 +184,15 @@ td input,td select{padding:5px 7px}
         <div class="field"><label for="referent_securite">Salarié désigné compétent (L4644-1)</label>
           <select id="referent_securite" name="referent_securite"><option value="">À renseigner</option><option>Oui</option><option>Non</option></select></div>
       </div>
+      <h2 style="margin-top:28px">Indicateurs AT/MP (trois dernières années)</h2>
+      <p class="hint">Accidents du travail et maladies professionnelles déclarés par l'employeur.</p>
+      <div class="grid">
+        <div class="field"><label for="at_nombre">Accidents du travail avec arrêt</label><input id="at_nombre" name="at_nombre" type="number" min="0" class="num"></div>
+        <div class="field"><label for="at_jours">Jours d'arrêt cumulés</label><input id="at_jours" name="at_jours" type="number" min="0" class="num"></div>
+        <div class="field"><label for="mp_declarees">Maladies professionnelles déclarées</label><input id="mp_declarees" name="mp_declarees" type="number" min="0" class="num"></div>
+        <div class="field"><label for="mp_reconnues">Maladies professionnelles reconnues</label><input id="mp_reconnues" name="mp_reconnues" type="number" min="0" class="num"></div>
+        <div class="field wide"><label for="at_commentaire">Nature des accidents et des maladies</label><textarea id="at_commentaire" name="at_commentaire"></textarea></div>
+      </div>
     </section>
 
     <!-- 3. Postes -->
@@ -238,7 +247,7 @@ td input,td select{padding:5px 7px}
         <div class="field"><label for="date_visite">Date de visite</label><input id="date_visite" name="date_visite" placeholder="JJ/MM/AAAA"></div>
         <div class="field"><label for="date_redaction">Date de rédaction</label><input id="date_redaction" name="date_redaction" placeholder="JJ/MM/AAAA"></div>
         <div class="field"><label for="statut">Statut</label>
-          <select id="statut" name="statut"><option>En cours de rédaction</option><option>À valider par le médecin</option><option>Validée</option></select></div>
+          <select id="statut" name="statut"><option>En cours de rédaction</option><option>À valider par le médecin</option><option>Validée</option><option>Transmise à l'employeur</option></select></div>
       </div>
     </section>
 
@@ -387,7 +396,8 @@ td input,td select{padding:5px 7px}
   document.getElementById('confirm-yes').onclick=()=>{
     box.hidden=true;
     const c=count(); const d=new Date();
-    const stamp=d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const tz={timeZone:'Europe/Paris'};
+    const stamp=d.toLocaleDateString('fr-FR',tz)+' à '+d.toLocaleTimeString('fr-FR',{...tz,hour:'2-digit',minute:'2-digit'});
     statut.classList.add('saved'); statut.textContent='Enregistrée le '+stamp;
     const sb=document.getElementById('saved-box'); sb.hidden=false;
     document.getElementById('saved-title').textContent='Fiche enregistrée le '+stamp;
