@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outil Prévention · Recueil des faits AT (démo)</title>
+<style>
+  :root{
+    --navy:#2b3a67; --navy2:#3d4f86; --bg:#dfe8f3; --panel:#ffffff; --line:#d6dbe4;
+    --field:#eef2f7; --teal:#33c3d4; --teal-d:#26a9b9; --red:#e8434f; --muted:#7b859a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;color:var(--navy);background:var(--bg);font-size:14px}
+  .demo-banner{position:fixed;top:0;left:0;right:0;z-index:50;background:#2b3a67;color:#fff;text-align:center;font-size:12px;padding:4px;letter-spacing:.04em}
+  .app{display:flex;min-height:100vh;padding-top:24px}
+  /* Sidebar */
+  aside{width:290px;background:#fff;flex-shrink:0;border-right:1px solid var(--line);position:sticky;top:24px;height:calc(100vh - 24px);overflow:auto}
+  .brand{display:flex;align-items:center;justify-content:space-between;padding:14px 18px}
+  .brand .logo{font-weight:800;font-size:22px;color:#e2202f;line-height:1.05;letter-spacing:-.02em}
+  .brand .logo b{font-weight:300;border-left:2px solid #e2202f;padding-left:6px;margin-left:4px}
+  .brand .logo span{display:block;font-weight:400;font-size:14px;color:#e2202f;letter-spacing:.06em;text-align:center}
+  .burger{width:22px;height:14px;border-top:2px solid var(--navy);border-bottom:2px solid var(--navy);position:relative}
+  .burger:after{content:"";position:absolute;left:0;right:0;top:4px;border-top:2px solid var(--navy)}
+  .clock{text-align:center;padding:18px 0 22px;line-height:2}
+  nav a{display:flex;align-items:center;gap:12px;padding:11px 20px;color:var(--navy);text-decoration:none;cursor:pointer}
+  nav a:hover{background:#f2f5fa}
+  nav .hub{color:var(--red)}
+  nav .open{background:#e3eaf4;border-left:3px solid var(--navy)}
+  nav .sub{padding-left:46px}
+  nav .sub2{padding-left:72px}
+  nav .active{font-weight:600;background:#f2f5fa}
+  .chev{margin-left:auto;font-size:11px;color:var(--muted)}
+  /* Top bar */
+  main{flex:1;min-width:0}
+  .topbar{height:52px;display:flex;align-items:center;justify-content:flex-end;gap:26px;padding:0 28px;font-weight:600}
+  .avatar{width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:var(--red);margin-right:10px}
+  .content{padding:14px 30px 60px}
+  /* Step 1 */
+  .modal{max-width:680px;margin:50px auto;background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .modal h2{margin:0;font-size:16px;font-weight:500;text-align:center;padding:16px;background:#eef2f7;border-bottom:1px solid var(--line);border-radius:6px 6px 0 0}
+  .modal .body{padding:40px 28px 28px}
+  .modal .foot{border-top:1px solid var(--line);padding:16px 18px;display:flex;justify-content:flex-end}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px}
+  /* Form */
+  .sheet{background:#fff;border-radius:4px;padding:18px 22px 30px}
+  .sheet > h1{font-size:17px;font-weight:500;text-align:center;margin:8px 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .section{margin:22px 0 16px;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.12);border-radius:3px;padding:16px;text-align:center;font-size:16px;font-weight:500}
+  .section.left{text-align:left;padding-left:44px}
+  .grid{display:grid;gap:12px 30px;margin-bottom:12px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 2fr}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}
+  .span2{grid-column:span 2}.span3{grid-column:span 3}
+  label.f{display:block;font-size:0}
+  label.f input,label.f select{font-size:14px}
+  input[type=text],select,textarea{width:100%;font:inherit;color:var(--navy);border:1px solid #c9d0dc;border-radius:2px;padding:8px 14px;background:#fff;min-height:36px}
+  input[readonly]{background:var(--field)}
+  textarea{resize:vertical;min-height:54px}
+  input::placeholder,textarea::placeholder{color:#8d96a8}
+  select{appearance:auto}
+  .row{display:flex;align-items:center;gap:16px;margin:10px 0}
+  .row .q{flex:1;padding-left:16px}
+  .row2{display:grid;grid-template-columns:1fr auto 1fr auto;gap:12px 30px;align-items:center;margin:10px 0}
+  .row2 .q{padding-left:16px}
+  .yn{display:inline-flex}
+  .yn button{font:inherit;padding:7px 14px;border:1px solid var(--teal);background:#fff;color:var(--teal);cursor:pointer;min-width:52px}
+  .yn button[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
+  .lat{display:flex;justify-content:flex-start;margin:-2px 0 12px 126px}
+  .lat button{font:inherit;padding:7px 14px;border:1px solid var(--teal);background:#fff;color:var(--teal);cursor:pointer}
+  .lat button[aria-pressed=true]{background:var(--teal);color:#fff}
+  .timeline{display:grid;grid-template-columns:auto 1fr auto 1fr auto 1fr auto 1fr;gap:12px 18px;align-items:center;margin-bottom:12px}
+  .timeline span{text-align:center}
+  .inline{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:12px 30px;align-items:center;margin-bottom:12px}
+  .inline > span{padding-left:60px}
+  .btn{font:inherit;border:0;background:var(--teal);color:#fff;padding:9px 16px;border-radius:3px;cursor:pointer}
+  .btn:hover{background:var(--teal-d)}
+  .btn.full{width:100%;padding:11px;margin-top:22px;font-size:15px}
+  .file{display:flex;align-items:center;gap:30px;margin-top:20px}
+  .file .box{background:#343a46;color:#fff;padding:6px 14px;width:600px}
+  .rules{color:var(--red);font-size:13px;margin:6px 0 0 236px;line-height:1.5}
+  .hidden{display:none!important}
+  .prov{font-size:11px;color:#b07b00;margin:4px 0 0 2px}
+  .temoin-block{border-left:3px solid var(--teal);padding-left:12px;margin:8px 0 14px}
+  /* Confirmation & list */
+  .ok{max-width:900px;margin:30px auto;background:#fff;border-radius:6px;padding:26px 30px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  .ok h2{margin-top:0;font-weight:500}
+  .ok .num{display:inline-block;background:var(--teal);color:#fff;padding:4px 10px;border-radius:3px;font-weight:600}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+  td,th{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:500;width:36%}
+  .list th{width:auto}
+</style>
+</head>
+<body>
+<div class="demo-banner">ENVIRONNEMENT DE DÉMONSTRATION · DONNÉES FICTIVES · AUCUNE TRANSMISSION</div>
+<div class="app">
+  <aside>
+    <div class="brand"><div class="logo">Outil<b>PRÉVENTION</b><span>DÉMO</span></div><div class="burger"></div></div>
+    <div class="clock"><div id="today"></div><div id="now"></div></div>
+    <nav>
+      <a class="hub">✱&nbsp; Digital HUB</a>
+      <a>▲&nbsp; DUER <span class="chev">‹</span></a>
+      <a class="open">💬&nbsp; Sinistralité <span class="chev">⌄</span></a>
+      <a class="sub">Accident de travail <span class="chev">⌄</span></a>
+      <a class="sub2 active" id="nav-new" data-go="step1">Nouveau</a>
+      <a class="sub2" id="nav-list" data-go="list">Consulter</a>
+      <a class="sub">Accident de trajet <span class="chev">‹</span></a>
+      <a class="sub">Accident bénin <span class="chev">‹</span></a>
+      <a class="sub">Table Prestataire <span class="chev">‹</span></a>
+      <a class="sub">Maladie Professionnelle <span class="chev">‹</span></a>
+      <a class="sub">Synthèses des recueils des faits et analyses <span class="chev">‹</span></a>
+      <a class="sub">Configuration Coûts AT <span class="chev">‹</span></a>
+      <a class="sub">Configuration dat <span class="chev">‹</span></a>
+      <a>☰&nbsp; Actions <span class="chev">‹</span></a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="topbar"><span>◉</span><span>🔔</span><span><span class="avatar">DÉMO</span>UTILISATEUR DÉMO (Administrateur) ⌄</span></div>
+    <div class="content">
+
+      <!-- ÉTAPE 1 : MATRICULE -->
+      <section id="step1">
+        <div class="modal">
+          <h2>Etape 1 : Veuillez saisir le matricule de la personne</h2>
+          <div class="body">
+            <input type="text" id="matricule" name="matricule" aria-label="Matricule de la personne" autocomplete="off">
+            <div class="err" id="matErr"></div>
+          </div>
+          <div class="foot"><button class="btn" id="btnSuivant" type="button">Suivant</button></div>
+        </div>
+      </section>
+
+      <!-- FORMULAIRE -->
+      <section id="step2" class="hidden">
+        <form id="atForm" class="sheet" novalidate>
+          <h1>Recueil des faits accidents de travail (AT)</h1>
+
+          <div class="section">L’employeur</div>
+          <div class="grid g3">
+            <label class="f">Raison sociale<input type="text" name="emp_raison" readonly></label>
+            <label class="f">SIRET de l'établissement d'attache<input type="text" name="emp_siret" readonly></label>
+            <label class="f">N° de risque Sécurité sociale<input type="text" name="emp_risque" readonly></label>
+          </div>
+          <div class="grid" style="grid-template-columns:2fr 1fr 1.5fr">
+            <label class="f">Adresse<input type="text" name="emp_adresse" readonly></label>
+            <label class="f">Code postal<input type="text" name="emp_cp" readonly></label>
+            <label class="f">Ville<input type="text" name="emp_ville" readonly></label>
+          </div>
+          <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+            <label class="f">Téléphone employeur<input type="text" name="emp_tel" readonly></label>
+            <label class="f">Pays employeur<input type="text" name="emp_pays" readonly></label>
+          </div>
+          <div class="grid" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+            <label class="f">Service de santé au travail<input type="text" name="sst_nom" readonly></label>
+            <label class="f">Adresse SST<input type="text" name="sst_adresse" readonly></label>
+            <label class="f">Code postal SST<input type="text" name="sst_cp" readonly></label>
+            <label class="f">Ville SST<input type="text" name="sst_ville" readonly></label>
+            <label class="f">Pays<input type="text" name="sst_pays" readonly></label>
+          </div>
+
+          <div class="section">La victime</div>
+          <div class="grid g5">
+            <label class="f">N° d'immatriculation<input type="text" name="vic_nir" readonly></label>
+            <label class="f">Nom de naissance<input type="text" name="vic_nom_naissance" readonly></label>
+            <label class="f">Nom d'usage<input type="text" name="vic_nom" readonly></label>
+            <label class="f">Prénom<input type="text" name="vic_prenom" readonly></label>
+            <label class="f">Matricule<input type="text" name="vic_matricule" readonly></label>
+          </div>
+          <div class="grid" style="grid-template-columns:1fr 1fr 1.5fr 2fr">
+            <label class="f">Civilité<input type="text" name="vic_civilite" readonly></label>
+            <label class="f">Date de naissance<input type="text" name="vic_naissance" readonly></label>
+            <label class="f">Nationalité<input type="text" name="vic_nationalite" readonly></label>
+            <label class="f">Établissement<input type="text" name="vic_etab" readonly></label>
+          </div>
+          <div class="grid" style="grid-template-columns:3fr 1fr 1fr 1fr">
+            <label class="f">Adresse<input type="text" name="vic_adresse" readonly></label>
+            <label class="f">Code postal<input type="text" name="vic_cp" readonly></label>
+            <label class="f">Ville<input type="text" name="vic_ville" readonly></label>
+            <label class="f">Pays<input type="text" name="vic_pays" readonly></label>
+          </div>
+          <div class="grid g4">
+            <label class="f">Ancienneté dans le poste (mois)<input type="text" name="vic_anciennete" readonly></label>
+            <label class="f">Profession<input type="text" name="vic_profession" readonly></label>
+            <label class="f">Service<input type="text" name="vic_service" readonly></label>
+            <label class="f">Secteur<input type="text" name="vic_secteur" readonly></label>
+          </div>
+          <div class="grid g4">
+            <label class="f">Qualification professionnelle<input type="text" name="vic_qualif" readonly></label>
+            <label class="f">Contrat de travail<input type="text" name="vic_contrat" readonly></label>
+            <label class="f">Région / direction
+              <select name="vic_region" data-provisoire="1">
+                <option value="">-- Sélectionner --</option>
+                <option>BORDEAUX</option><option>LILLE-DOUAI</option><option>LYON</option><option>PARIS-IDF</option><option>MARSEILLE</option>
+              </select></label>
+            <label class="f">Code établissement<input type="text" name="vic_code_etab" readonly></label>
+          </div>
+
+          <div class="section">Les informations relatives à l’accident</div>
+          <div class="inline">
+            <span>Date accident</span><input type="text" name="acc_date" id="acc_date" placeholder="jj/mm/aaaa" aria-label="Date accident">
+            <span>Heure accident</span><input type="text" name="acc_heure" id="acc_heure" placeholder="hh:mm" aria-label="Heure accident">
+          </div>
+          <div class="timeline">
+            <span>Horaire</span><input type="text" name="hor_debut1" placeholder="hh:mm" aria-label="Horaire de travail début plage 1">
+            <span>à</span><input type="text" name="hor_fin1" placeholder="hh:mm" aria-label="Horaire de travail fin plage 1">
+            <span>et</span><input type="text" name="hor_debut2" placeholder="--:--" aria-label="Horaire de travail début plage 2">
+            <span>à</span><input type="text" name="hor_fin2" placeholder="--:--" aria-label="Horaire de travail fin plage 2">
+          </div>
+          <div class="grid" style="grid-template-columns:1fr 3fr">
+            <select name="acc_lieu" aria-label="Lieu de l'accident" data-provisoire="1">
+              <option value="">Lieu de l’accident</option>
+              <option>Lieu de travail habituel</option><option>Lieu de travail occasionnel</option><option>Lieu du repas</option>
+              <option>Trajet domicile - lieu de travail</option><option>Trajet lieu de travail - lieu du repas</option><option>Déplacement pour l'employeur</option>
+            </select>
+            <input type="text" name="acc_adresse" placeholder="Adresse exacte de l'accident" aria-label="Adresse exacte de l'accident">
+          </div>
+          <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+            <input type="text" name="acc_cp" placeholder="Code postal" aria-label="Code postal du lieu de l'accident">
+            <input type="text" name="acc_ville" placeholder="Ville" aria-label="Ville du lieu de l'accident">
+            <input type="text" name="acc_pays" value="France" aria-label="Pays du lieu de l'accident">
+          </div>
+          <div class="grid"><input type="text" name="acc_siret" placeholder="N° siret du lieu de l'accident" aria-label="N° siret du lieu de l'accident"></div>
+
+          <div class="row"><span class="q">La victime a-t-elle continué à travailler normalement le jour des faits, après l’accident ?</span><span class="yn" data-name="continue_travail"></span><span style="width:560px"></span></div>
+
+          <div class="grid"><input type="text" name="acc_activite" placeholder="Activité de la victime lors de l'accident, quelles taches effectuait-elle ?" aria-label="Activité de la victime lors de l'accident"></div>
+          <div class="grid"><textarea name="acc_description" placeholder="Description précise de l'accident" aria-label="Description précise de l'accident"></textarea></div>
+          <div class="grid"><textarea name="acc_circonstances" placeholder="Circonstances détaillées de l’accident, commentaires hors CERFA" aria-label="Circonstances détaillées de l'accident, commentaires hors CERFA"></textarea></div>
+
+          <div class="grid g2">
+            <select name="les_siege" aria-label="Siège des lésions" data-provisoire="1">
+              <option value="">Siège des lésions</option>
+              <option>Tête</option><option>Yeux</option><option>Cou</option><option>Épaule</option><option>Bras</option><option>Coude</option><option>Poignet</option><option>Main</option><option>Doigts</option>
+              <option>Dos / tronc</option><option>Bassin / hanche</option><option>Jambe</option><option>Genou</option><option>Cheville</option><option>Pied</option><option>Sièges multiples</option><option>Non précisé</option>
+            </select>
+            <select name="les_nature" aria-label="Nature des lésions" data-provisoire="1">
+              <option value="">Nature des lésions</option>
+              <option>Coup / hématome</option><option>Contusion</option><option>Écrasement</option><option>Plaie / coupure</option><option>Entorse</option><option>Fracture</option>
+              <option>Lumbago / douleur dorsale</option><option>Douleur musculaire</option><option>Brûlure</option><option>Corps étranger</option><option>Malaise</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="lat" data-name="les_lateralite">
+            <button type="button" data-v="Non précisé" aria-pressed="true">Non Précisé</button>
+            <button type="button" data-v="Droit" aria-pressed="false">Droit</button>
+            <button type="button" data-v="Gauche" aria-pressed="false">Gauche</button>
+            <button type="button" data-v="Les deux" aria-pressed="false">Les deux</button>
+          </div>
+          <div class="grid g2">
+            <input type="text" name="acc_objet" placeholder="Objet dont le contact a blessé la victime" aria-label="Objet dont le contact a blessé la victime">
+            <select name="acc_consequences" aria-label="Conséquences" data-provisoire="1">
+              <option value="">Conséquences</option><option>Sans arrêt de travail</option><option>Avec arrêt de travail</option><option>Décès</option>
+            </select>
+          </div>
+          <div class="row2">
+            <span class="q">Un rapport de police a-t-il été établi ?</span><span class="yn" data-name="rapport_police"></span>
+            <span class="q">La victime a été transportée vers l’hôpital ?</span><span class="yn" data-name="transport_hopital"></span>
+          </div>
+          <div class="row2">
+            <span class="q">L’accident a-t-il fait d’autre(s) victime(s) ?</span><span class="yn" data-name="autres_victimes"></span><span></span><span></span>
+          </div>
+          <div class="grid" style="grid-template-columns:1.3fr 1fr 1fr 1.3fr .8fr;align-items:center">
+            <select name="acc_connu" aria-label="Connu / Constaté" data-provisoire="1">
+              <option value="">Connu / Contasté</option><option>Connu</option><option>Constaté</option>
+            </select>
+            <input type="text" name="acc_date_info" placeholder="Date d'information de l'em" aria-label="Date d'information de l'employeur">
+            <input type="text" name="acc_heure_info" placeholder="hh:mm" aria-label="Heure d'information de l'employeur">
+            <select name="acc_par_qui" aria-label="par qui" data-provisoire="1">
+              <option value="">par qui</option><option>L'employeur</option><option>Ses préposés</option>
+            </select>
+            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="decrit_victime"> Décrit par la victime</label>
+          </div>
+          <div class="row"><span class="q" style="text-align:right;flex:.62">L’accident est inscrit au registre des accidents bénins,</span><span class="yn" data-name="registre_benins"></span><span style="flex:1"></span></div>
+          <div id="benin-block" class="grid g2 hidden">
+            <input type="text" name="benin_date" placeholder="Date d'inscription au registre" aria-label="Date d'inscription au registre des accidents bénins">
+            <input type="text" name="benin_numero" placeholder="N° d'inscription au registre" aria-label="Numéro d'inscription au registre des accidents bénins">
+          </div>
+
+          <div class="section">Témoins ou première personne avisée</div>
+          <div class="row"><span class="q">Existe-t-il un témoin ?</span><span class="yn" data-name="temoin_existe"></span><span style="flex:1"></span></div>
+          <div id="temoin-block" class="temoin-block hidden">
+            <div class="grid g2">
+              <input type="text" name="tem_nom" placeholder="Nom du témoin" aria-label="Nom du témoin">
+              <input type="text" name="tem_prenom" placeholder="Prénom du témoin" aria-label="Prénom du témoin">
+            </div>
+            <div class="grid"><input type="text" name="tem_adresse" placeholder="Adresse du témoin" aria-label="Adresse du témoin"></div>
+            <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+              <input type="text" name="tem_cp" placeholder="Code postal" aria-label="Code postal du témoin">
+              <input type="text" name="tem_ville" placeholder="Ville" aria-label="Ville du témoin">
+              <input type="text" name="tem_pays" value="France" aria-label="Pays du témoin">
+            </div>
+          </div>
+          <div class="section left">Première personne avisée</div>
+          <div class="grid g2">
+            <input type="text" name="ppa_nom" placeholder="Nom" aria-label="Nom de la première personne avisée">
+            <input type="text" name="ppa_prenom" placeholder="Prénom" aria-label="Prénom de la première personne avisée">
+          </div>
+          <div class="grid"><input type="text" name="ppa_adresse" placeholder="Adresse" aria-label="Adresse de la première personne avisée"></div>
+          <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+            <input type="text" name="ppa_cp" placeholder="Code postal" aria-label="Code postal de la première personne avisée">
+            <input type="text" name="ppa_ville" placeholder="Ville" aria-label="Ville de la première personne avisée">
+            <input type="text" name="ppa_pays" value="France" aria-label="Pays de la première personne avisée">
+          </div>
+
+          <div class="section">Tiers</div>
+          <div class="row"><span class="q">L’accident a-t-il été causé par un tiers ?</span><span class="yn" data-name="tiers"></span><span style="flex:1.1"></span></div>
+          <div id="tiers-block" class="grid g2 hidden">
+            <input type="text" name="tiers_identite" placeholder="Nom et adresse du tiers" aria-label="Nom et adresse du tiers">
+            <input type="text" name="tiers_assurance" placeholder="Société d'assurance du tiers" aria-label="Société d'assurance du tiers">
+          </div>
+
+          <div class="section">Réserve éventuelle</div>
+          <div class="row"><span class="q">Souhaitez vous apporter des réserves à cet accident ?</span><span class="yn" data-name="reserves"></span><span style="flex:1"></span></div>
+          <div id="reserves-block" class="grid hidden"><textarea name="reserves_motif" placeholder="Réserves motivées" aria-label="Réserves motivées"></textarea></div>
+
+          <div class="section">Pré Analyse</div>
+          <div class="grid g2">
+            <select name="pa_cause" aria-label="Cause de l'accident" data-provisoire="1">
+              <option value="">Cause de l’accident</option>
+              <option>Manutention manuelle</option><option>Chute ou renversement de charge</option><option>Engin de manutention / chariot</option>
+              <option>Chute de plain-pied</option><option>Chute de hauteur</option><option>Outil / machine</option><option>Ambiance de travail</option><option>Autre</option>
+            </select>
+            <select name="pa_sous_cause" aria-label="Sous Cause de l'accident" data-provisoire="1">
+              <option value="">Sous Cause de l’accident</option>
+              <option>Charge roulante (roll, transpalette)</option><option>Charge lourde ou encombrante</option><option>Encombrement de la zone de circulation</option>
+              <option>Sol glissant ou souillé</option><option>Geste ou posture inadapté</option><option>Absence de procédure</option><option>Matériel inadapté ou défectueux</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="grid g2">
+            <select name="pa_risque" aria-label="Risque" data-provisoire="1">
+              <option value="">Risque</option>
+              <option>Manutention manuelle</option><option>Chute d'objets / de charges</option><option>Circulation interne / engins</option>
+              <option>Chute de plain-pied</option><option>Ambiance thermique (froid)</option><option>Bruit</option><option>Autre</option>
+            </select>
+            <select name="pa_unite" aria-label="Unité de travail" data-provisoire="1">
+              <option value="">Unité de travail</option>
+              <option>Réception - quais</option><option>Stockage froid</option><option>Préparation de commandes</option><option>Expédition</option><option>Conduite d'engins</option><option>Maintenance</option><option>Administratif</option>
+            </select>
+          </div>
+          <div class="grid"><input type="text" name="pa_serie_evenements" placeholder="Description détaillée de la série d’évènements ayant entraîné l’accident" aria-label="Description détaillée de la série d'évènements ayant entraîné l'accident"></div>
+          <div class="grid"><input type="text" name="pa_obs_hierarchie" placeholder="Observations de la hiérarchie" aria-label="Observations de la hiérarchie"></div>
+          <div class="grid"><input type="text" name="pa_remarques_rp" placeholder="Remarques du Représentants de proximité" aria-label="Remarques du représentant de proximité"></div>
+
+          <div class="section" style="min-height:52px"></div>
+          <div class="row2">
+            <select name="pa_gravite" aria-label="Gravité de l'évènement" data-provisoire="1" style="grid-column:span 2">
+              <option value="">Gravité de l’évènement</option><option>Faible</option><option>Modérée</option><option>Grave</option><option>Très grave</option>
+            </select>
+            <span class="q">Présence d’externe (clients, prestataires....) ?</span><span class="yn" data-name="presence_externe"></span>
+          </div>
+          <div class="row2">
+            <span class="q">Présence d’autorité publique ?</span><span class="yn" data-name="presence_autorite"></span>
+            <span class="q">Présence de média ?</span><span class="yn" data-name="presence_media"></span>
+          </div>
+
+          <div class="section" style="min-height:52px"></div>
+          <div class="file"><span style="padding-left:16px;width:220px">Pièce jointe</span>
+            <span class="box"><input type="file" name="piece_jointe" id="piece_jointe" accept=".xml,.pdf,.png,.jpg,.jpeg,.doc"></span></div>
+          <div class="rules">- Les extensions autorisées sont : xml,pdf, png, jpg, doc<br>- La taille maximale de la pj est : 2M<br>- Le nom de la pj ne doit pas contenir des accents<br>- Le nom de la pj ne doit pas dépasser 200 caractères</div>
+          <div class="err" id="formErr" style="margin-top:14px"></div>
+          <button type="submit" class="btn full" id="btnValider">Valider</button>
+        </form>
+      </section>
+
+      <!-- CONFIRMATION -->
+      <section id="step3" class="hidden">
+        <div class="ok">
+          <h2>Recueil des faits enregistré</h2>
+          <p>Dossier n° <span class="num" id="okNum"></span>, enregistré le <span id="okDate"></span>.</p>
+          <table id="okTable"></table>
+          <p style="margin-top:22px"><button class="btn" type="button" id="btnNouveau">Nouvelle déclaration</button></p>
+        </div>
+      </section>
+
+      <!-- CONSULTER -->
+      <section id="list" class="hidden">
+        <div class="ok">
+          <h2>Accidents de travail enregistrés</h2>
+          <table class="list" id="listTable"></table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+/* ---------- Données fictives (référentiel RH de démonstration) ---------- */
+const EMPLOYEUR = {
+  emp_raison:"AUCHAN RETAIL LOGISTIQUE", emp_siret:"83223540200175", emp_risque:"631DA",
+  emp_adresse:"19 PARC ECO PAYSAGER ROUTE DE CANTE", emp_cp:"33750", emp_ville:"BEYCHAC ET CAILLAU FRANCE", emp_tel:"0", emp_pays:"France",
+  sst_nom:"SERVICE DE SANTE AU TRAVAIL (DEMO)", sst_adresse:"1 RUE DE LA DEMO", sst_cp:"33270", sst_ville:"FLOIRAC", sst_pays:"France"
+};
+const SALARIES = {
+  "FRA0000001": {
+    vic_nir:"1 84 03 99 999 999 99", vic_nom_naissance:"MARTIN", vic_nom:"MARTIN", vic_prenom:"JULIEN", vic_matricule:"FRA0000001",
+    vic_civilite:"M.", vic_naissance:"14/03/1984", vic_nationalite:"France", vic_etab:"ARL - BEYCHAC AUCHAN RETAIL LOGISTIQUE",
+    vic_adresse:"10 RUE DES FICTIFS", vic_cp:"33000", vic_ville:"BORDEAUX", vic_pays:"FRA",
+    vic_anciennete:"50", vic_profession:"L513 EMPLOYE LOGISTIQUE QUALIFIE", vic_service:"Réception", vic_secteur:"Produits frais",
+    vic_qualif:"employé", vic_contrat:"CONTRAT A DUREE INDETERMINEE", vic_region:"BORDEAUX", vic_code_etab:"331"
+  },
+  "FRA0000002": {
+    vic_nir:"2 90 07 99 999 999 99", vic_nom_naissance:"DURAND", vic_nom:"BERNARD", vic_prenom:"CLAIRE", vic_matricule:"FRA0000002",
+    vic_civilite:"Mme", vic_naissance:"02/07/1990", vic_nationalite:"France", vic_etab:"ARL - BEYCHAC AUCHAN RETAIL LOGISTIQUE",
+    vic_adresse:"5 AVENUE DE L'EXEMPLE", vic_cp:"33500", vic_ville:"LIBOURNE", vic_pays:"FRA",
+    vic_anciennete:"18", vic_profession:"PREPARATRICE DE COMMANDES", vic_service:"Préparation", vic_secteur:"Produits frais",
+    vic_qualif:"employée", vic_contrat:"CONTRAT A DUREE INDETERMINEE", vic_region:"BORDEAUX", vic_code_etab:"331"
+  }
+};
+const STORE_KEY = "demo_outil_prevention_at";
+
+/* ---------- Utilitaires ---------- */
+const $ = s => document.querySelector(s);
+const form = $("#atForm");
+function show(id){
+  ["step1","step2","step3","list"].forEach(s => $("#"+s).classList.toggle("hidden", s!==id));
+  $("#nav-new").classList.toggle("active", id!=="list");
+  $("#nav-list").classList.toggle("active", id==="list");
+  window.scrollTo(0,0);
+}
+function tick(){
+  const d = new Date();
+  const s = d.toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+  $("#today").textContent = s.charAt(0).toUpperCase()+s.slice(1);
+  $("#now").textContent = d.toLocaleTimeString("fr-FR");
+}
+tick(); setInterval(tick,1000);
+function loadStore(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)||"[]"); }catch(e){ return []; } }
+function saveStore(a){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(a)); }catch(e){} }
+
+/* ---------- Boutons OUI / NON ---------- */
+const toggles = {temoin_existe:"#temoin-block", tiers:"#tiers-block", reserves:"#reserves-block", registre_benins:"#benin-block"};
+document.querySelectorAll(".yn").forEach(g => {
+  const name = g.dataset.name;
+  g.innerHTML = `<button type="button" data-v="OUI" aria-pressed="false" aria-label="${name} OUI">OUI</button><button type="button" data-v="NON" aria-pressed="true" aria-label="${name} NON">NON</button><input type="hidden" name="${name}" value="NON">`;
+  g.addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    g.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x===b ? "true":"false"));
+    g.querySelector("input").value = b.dataset.v;
+    if(toggles[name]) $(toggles[name]).classList.toggle("hidden", b.dataset.v!=="OUI");
+  });
+});
+const lat = $(".lat");
+lat.insertAdjacentHTML("beforeend",'<input type="hidden" name="les_lateralite" value="Non précisé">');
+lat.addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  lat.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x===b ? "true":"false"));
+  lat.querySelector("input").value = b.dataset.v;
+});
+
+/* ---------- Étape 1 ---------- */
+function goStep1(){
+  form.reset();
+  document.querySelectorAll(".yn").forEach(g => g.querySelector('[data-v="NON"]').click());
+  lat.querySelector('[data-v="Non précisé"]').click();
+  $("#matricule").value = ""; $("#matErr").textContent = ""; $("#formErr").textContent = "";
+  show("step1"); $("#matricule").focus();
+}
+function suivant(){
+  const m = $("#matricule").value.trim().toUpperCase();
+  const s = SALARIES[m];
+  if(!s){ $("#matErr").textContent = "Matricule inconnu. Matricules de démonstration : FRA0000001, FRA0000002."; return; }
+  const data = Object.assign({}, EMPLOYEUR, s);
+  Object.entries(data).forEach(([k,v]) => { const el = form.elements[k]; if(el) el.value = v; });
+  show("step2");
+}
+$("#btnSuivant").addEventListener("click", suivant);
+$("#matricule").addEventListener("keydown", e => { if(e.key==="Enter"){ e.preventDefault(); suivant(); } });
+
+/* ---------- Validation ---------- */
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const f = form.elements, errs = [];
+  if(!/^\d{2}\/\d{2}\/\d{4}$/.test(f.acc_date.value.trim())) errs.push("Date accident (jj/mm/aaaa)");
+  if(!/^\d{2}:\d{2}$/.test(f.acc_heure.value.trim())) errs.push("Heure accident (hh:mm)");
+  if(!f.acc_lieu.value) errs.push("Lieu de l'accident");
+  if(!f.acc_description.value.trim()) errs.push("Description précise de l'accident");
+  if(!f.les_siege.value) errs.push("Siège des lésions");
+  if(!f.les_nature.value) errs.push("Nature des lésions");
+  if(!f.acc_consequences.value) errs.push("Conséquences");
+  const file = f.piece_jointe.files[0];
+  if(file){
+    if(file.size > 2*1024*1024) errs.push("Pièce jointe : 2 Mo maximum");
+    if(/[À-ÿ]/.test(file.name)) errs.push("Pièce jointe : nom sans accents");
+    if(file.name.length > 200) errs.push("Pièce jointe : nom de 200 caractères maximum");
+  }
+  if(errs.length){ $("#formErr").textContent = "Champs à compléter ou corriger : " + errs.join(", ") + "."; $("#formErr").scrollIntoView({block:"center"}); return; }
+
+  const rec = {};
+  [...f].forEach(el => {
+    if(!el.name) return;
+    if(el.type==="file") rec[el.name] = el.files[0] ? el.files[0].name : "";
+    else if(el.type==="checkbox") rec[el.name] = el.checked ? "Oui" : "Non";
+    else rec[el.name] = el.value;
+  });
+  const now = new Date();
+  rec._num = "AT-" + now.getFullYear() + "-" + String(Math.floor(Math.random()*90000)+10000);
+  rec._date = now.toLocaleString("fr-FR");
+  const store = loadStore(); store.unshift(rec); saveStore(store);
+  renderConfirm(rec);
+});
+
+/* ---------- Confirmation & consultation ---------- */
+function labelOf(name){
+  const el = form.elements[name];
+  if(!el) return name;
+  if(el.getAttribute && el.getAttribute("aria-label")) return el.getAttribute("aria-label");
+  const lab = el.closest && el.closest("label"); if(lab) return lab.childNodes[0].textContent.trim();
+  const yn = document.querySelector(`.yn[data-name="${name}"]`);
+  if(yn){ const q = yn.parentElement.querySelectorAll(".q"); const idx=[...yn.parentElement.children].indexOf(yn); return (yn.previousElementSibling && yn.previousElementSibling.textContent.trim()) || name; }
+  return el.placeholder || name;
+}
+function renderConfirm(rec){
+  $("#okNum").textContent = rec._num; $("#okDate").textContent = rec._date;
+  const skip = n => n.startsWith("_") || n.startsWith("emp_") || n.startsWith("sst_");
+  $("#okTable").innerHTML = Object.entries(rec).filter(([k,v]) => !skip(k) && v!=="" )
+    .map(([k,v]) => `<tr><th>${labelOf(k)}</th><td>${String(v).replace(/</g,"&lt;")}</td></tr>`).join("");
+  show("step3");
+}
+function renderList(){
+  const s = loadStore();
+  $("#listTable").innerHTML = s.length
+    ? "<tr><th>N° dossier</th><th>Saisi le</th><th>Victime</th><th>Date accident</th><th>Lésions</th><th>Conséquences</th></tr>" +
+      s.map(r => `<tr><td>${r._num}</td><td>${r._date}</td><td>${r.vic_nom} ${r.vic_prenom}</td><td>${r.acc_date} ${r.acc_heure}</td><td>${r.les_siege} / ${r.les_nature}</td><td>${r.acc_consequences}</td></tr>`).join("")
+    : "<tr><td>Aucun accident enregistré.</td></tr>";
+  show("list");
+}
+$("#btnNouveau").addEventListener("click", goStep1);
+$("#nav-new").addEventListener("click", goStep1);
+$("#nav-list").addEventListener("click", renderList);
+goStep1();
+</script>
+</body>
+</html>
