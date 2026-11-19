@@ -186,11 +186,7 @@
           <div class="grid g4">
             <label class="f">Qualification professionnelle<input type="text" name="vic_qualif" readonly></label>
             <label class="f">Contrat de travail<input type="text" name="vic_contrat" readonly></label>
-            <label class="f">Région / direction
-              <select name="vic_region" data-provisoire="1">
-                <option value="">-- Sélectionner --</option>
-                <option>BORDEAUX</option><option>LILLE-DOUAI</option><option>LYON</option><option>PARIS-IDF</option><option>MARSEILLE</option>
-              </select></label>
+            <label class="f">CPAM<select name="vic_region" ><option value="">-- Sélectionner --</option><option>BORDEAUX</option><option>EVREUX</option><option>EVRY</option><option>LILLE-DOUAI</option><option>LYON</option><option>PARIS</option></select></label>
             <label class="f">Code établissement<input type="text" name="vic_code_etab" readonly></label>
           </div>
 
@@ -206,10 +202,8 @@
             <span>à</span><input type="text" name="hor_fin2" placeholder="--:--" aria-label="Horaire de travail fin plage 2">
           </div>
           <div class="grid" style="grid-template-columns:1fr 3fr">
-            <select name="acc_lieu" aria-label="Lieu de l'accident" data-provisoire="1">
-              <option value="">Lieu de l’accident</option>
-              <option>Lieu de travail habituel</option><option>Lieu de travail occasionnel</option><option>Lieu du repas</option>
-              <option>Trajet domicile - lieu de travail</option><option>Trajet lieu de travail - lieu du repas</option><option>Déplacement pour l'employeur</option>
+            <select name="acc_lieu" aria-label="Lieu de l'accident" >
+              <option value="">Lieu de l’accident</option><option>Lieu de travail habituel</option><option>Lieu de travail occasionnel</option><option>Lieu du repas</option><option>Au cours d'un déplacement pour l'employeur</option>
             </select>
             <input type="text" name="acc_adresse" placeholder="Adresse exacte de l'accident" aria-label="Adresse exacte de l'accident">
           </div>
@@ -227,15 +221,11 @@
           <div class="grid"><textarea name="acc_circonstances" placeholder="Circonstances détaillées de l’accident, commentaires hors CERFA" aria-label="Circonstances détaillées de l'accident, commentaires hors CERFA"></textarea></div>
 
           <div class="grid g2">
-            <select name="les_siege" aria-label="Siège des lésions" data-provisoire="1">
-              <option value="">Siège des lésions</option>
-              <option>Tête</option><option>Yeux</option><option>Cou</option><option>Épaule</option><option>Bras</option><option>Coude</option><option>Poignet</option><option>Main</option><option>Doigts</option>
-              <option>Dos / tronc</option><option>Bassin / hanche</option><option>Jambe</option><option>Genou</option><option>Cheville</option><option>Pied</option><option>Sièges multiples</option><option>Non précisé</option>
+            <select name="les_siege" aria-label="Siège des lésions" >
+              <option value="">Siège des lésions</option><option>Bassin</option><option>Bras</option><option>Cheville</option><option>Cou</option><option>Coude</option><option>Dos</option><option>Epaule</option><option>Genou</option><option>Jambe</option><option>Main</option><option>Non précisé</option><option>Pied</option><option>Poignet</option><option>Siège interne</option><option>Sièges multiples</option><option>Tête</option><option>Torse</option><option>Yeux</option>
             </select>
-            <select name="les_nature" aria-label="Nature des lésions" data-provisoire="1">
-              <option value="">Nature des lésions</option>
-              <option>Coup / hématome</option><option>Contusion</option><option>Écrasement</option><option>Plaie / coupure</option><option>Entorse</option><option>Fracture</option>
-              <option>Lumbago / douleur dorsale</option><option>Douleur musculaire</option><option>Brûlure</option><option>Corps étranger</option><option>Malaise</option><option>Autre</option>
+            <select name="les_nature" aria-label="Nature des lésions" >
+              <option value="">Nature des lésions</option><option>Brûlure</option><option>Coup/hématome</option><option>Coupure</option><option>Décès</option><option>Douleur (sans coup, ni choc)</option><option>Ecrasement</option><option>Electrisation</option><option>Electrocution</option><option>Intoxication</option><option>Malaise spontané / inexpliqué</option><option>Non précisé</option><option>Piqûre</option><option>Plaie</option><option>Trouble auditif</option><option>Trouble emotionnel</option><option>Trouble visuel</option>
             </select>
           </div>
           <div class="lat" data-name="les_lateralite">
@@ -246,7 +236,7 @@
           </div>
           <div class="grid g2">
             <input type="text" name="acc_objet" placeholder="Objet dont le contact a blessé la victime" aria-label="Objet dont le contact a blessé la victime">
-            <select name="acc_consequences" aria-label="Conséquences" data-provisoire="1">
+            <select name="acc_consequences" aria-label="Conséquences" >
               <option value="">Conséquences</option><option>Sans arrêt de travail</option><option>Avec arrêt de travail</option><option>Décès</option>
             </select>
           </div>
@@ -258,13 +248,13 @@
             <span class="q">L’accident a-t-il fait d’autre(s) victime(s) ?</span><span class="yn" data-name="autres_victimes"></span><span></span><span></span>
           </div>
           <div class="grid" style="grid-template-columns:1.3fr 1fr 1fr 1.3fr .8fr;align-items:center">
-            <select name="acc_connu" aria-label="Connu / Constaté" data-provisoire="1">
-              <option value="">Connu / Contasté</option><option>Connu</option><option>Constaté</option>
+            <select name="acc_connu" aria-label="Connu / Constaté" >
+              <option value="">Connu / Contasté</option><option>Accident constaté</option><option>Accident connu</option>
             </select>
             <input type="text" name="acc_date_info" placeholder="Date d'information de l'em" aria-label="Date d'information de l'employeur">
             <input type="text" name="acc_heure_info" placeholder="hh:mm" aria-label="Heure d'information de l'employeur">
-            <select name="acc_par_qui" aria-label="par qui" data-provisoire="1">
-              <option value="">par qui</option><option>L'employeur</option><option>Ses préposés</option>
+            <select name="acc_par_qui" aria-label="par qui" >
+              <option value="">par qui</option><option>Par l'employeur</option><option>Par ses préposés</option><option>Autres</option>
             </select>
             <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="decrit_victime"> Décrit par la victime</label>
           </div>
@@ -313,27 +303,20 @@
 
           <div class="section">Pré Analyse</div>
           <div class="grid g2">
-            <select name="pa_cause" aria-label="Cause de l'accident" data-provisoire="1">
-              <option value="">Cause de l’accident</option>
-              <option>Manutention manuelle</option><option>Chute ou renversement de charge</option><option>Engin de manutention / chariot</option>
-              <option>Chute de plain-pied</option><option>Chute de hauteur</option><option>Outil / machine</option><option>Ambiance de travail</option><option>Autre</option>
+            <select name="pa_cause" aria-label="Cause de l'accident" >
+              <option value="">Cause de l’accident</option><option>1 Brulure</option><option>2 Coupure</option><option>3 Chute de hauteur</option><option>4 Chute de plain-pied</option><option>5 Chute d'objet, effondrement</option><option>6 Activité physique, manutention manuelle, posture de travail</option><option>7 Machines et outils</option><option>8 Manutention mécanique (motorisée ou non)</option><option>9 Produits chimiques</option><option>10 Ambiances liées à l'environnement de travail</option><option>11 Circulation / déplacement en interne</option><option>12 Circulation / déplacement en extérieur</option><option>13 Electricité</option><option>14 Biologique et hygiène</option><option>15 Rythme de travail</option><option>16 Agression et violence externe</option><option>17 Incendie/explosion</option><option>18 Exposition aux rayonnements</option><option>19 Exposition à amiante</option><option>20 Attentat</option><option>21 Intervention d'entreprises extérieures</option><option>22 RPS</option><option>23 Malaise</option>
             </select>
-            <select name="pa_sous_cause" aria-label="Sous Cause de l'accident" data-provisoire="1">
+            <select name="pa_sous_cause" aria-label="Sous Cause de l'accident" >
               <option value="">Sous Cause de l’accident</option>
               <option>Charge roulante (roll, transpalette)</option><option>Charge lourde ou encombrante</option><option>Encombrement de la zone de circulation</option>
               <option>Sol glissant ou souillé</option><option>Geste ou posture inadapté</option><option>Absence de procédure</option><option>Matériel inadapté ou défectueux</option><option>Autre</option>
             </select>
           </div>
           <div class="grid g2">
-            <select name="pa_risque" aria-label="Risque" data-provisoire="1">
-              <option value="">Risque</option>
-              <option>Manutention manuelle</option><option>Chute d'objets / de charges</option><option>Circulation interne / engins</option>
-              <option>Chute de plain-pied</option><option>Ambiance thermique (froid)</option><option>Bruit</option><option>Autre</option>
+            <select name="pa_risque" aria-label="Risque" >
+              <option value="">Risque</option><option>Non précisé</option><option>Risque attentat</option><option>Risque routier</option><option>Risques biologiques et hygiène</option><option>Risques d'incendie/ explosion</option><option>Risques de chutes</option><option>Risques liés à l'activité physique</option><option>Risques liés à l'ambiance de travail</option><option>Risques liés à l'amiante</option><option>Risques liés à l'électricité</option><option>Risques liés à la circulation (interne)</option><option>Risques liés à la co-activité</option><option>Risques liés aux agressions</option><option>Risques liés aux machines et outils</option><option>Risques liés aux produits chimiques</option><option>Risques liés aux rayonnements</option><option>Risques liés aux rythmes de travail</option><option>Risques psychosociaux</option>
             </select>
-            <select name="pa_unite" aria-label="Unité de travail" data-provisoire="1">
-              <option value="">Unité de travail</option>
-              <option>Réception - quais</option><option>Stockage froid</option><option>Préparation de commandes</option><option>Expédition</option><option>Conduite d'engins</option><option>Maintenance</option><option>Administratif</option>
-            </select>
+            <select name="pa_unite" aria-label="Unité de travail" ><option value="">Unité de travail</option><optgroup label="Entrepôt Logistique"><option>Administratif</option><option>AMiRal</option><option>Emballage</option><option>Espaces Communs</option><option>Expédition</option><option>Gestion des emplacements</option><option>Maintenance</option><option>Préparation AMiRal</option><option>Préparation de commande Produits Frais</option><option>Préparation de commande Produits Secs</option><option>Réception</option><option>Réception PF</option><option>Risques Transverses</option><option>Transit</option></optgroup></select>
           </div>
           <div class="grid"><input type="text" name="pa_serie_evenements" placeholder="Description détaillée de la série d’évènements ayant entraîné l’accident" aria-label="Description détaillée de la série d'évènements ayant entraîné l'accident"></div>
           <div class="grid"><input type="text" name="pa_obs_hierarchie" placeholder="Observations de la hiérarchie" aria-label="Observations de la hiérarchie"></div>
@@ -341,8 +324,8 @@
 
           <div class="section" style="min-height:52px"></div>
           <div class="row2">
-            <select name="pa_gravite" aria-label="Gravité de l'évènement" data-provisoire="1" style="grid-column:span 2">
-              <option value="">Gravité de l’évènement</option><option>Faible</option><option>Modérée</option><option>Grave</option><option>Très grave</option>
+            <select name="pa_gravite" aria-label="Gravité de l'évènement"  style="grid-column:span 2">
+              <option value="">Gravité de l’évènement</option><option>Accident Sans Gravité</option><option>Premiers soins (dispensé par SST)</option><option>Blessure légère nécessitant une consultation médicale</option><option>Blessure grave, hospitalisation en urgence</option><option>Décès</option>
             </select>
             <span class="q">Présence d’externe (clients, prestataires....) ?</span><span class="yn" data-name="presence_externe"></span>
           </div>
